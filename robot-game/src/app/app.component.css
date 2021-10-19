@@ -1,0 +1,13 @@
+.esPared {
+  background-color: black;
+}
+
+.posicionInicial{
+  background-image: url('https://www.purina-latam.com/sites/g/files/auxxlc391/files/styles/social_share_large/public/purina-por-que-vemos-tan-felices-a-los-gatos-en-cajas-de-carton.png?itok=xABhZ8v9');
+  object-fit: scale-down;
+  object-position: 10px;
+}
+
+.posicionMeta{
+ background-image: url('https://www.pinclipart.com/picdir/middle/565-5650099_chicken-leg-coloring-page-pierna-de-pollo-dibujo.png');
+}
