@@ -2,7 +2,9 @@ package proyecto.game;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import proyecto.herramientas.Alertas;
 
 public class Controller {
 
@@ -52,19 +54,49 @@ public class Controller {
     @FXML
     void colocarFichaColumnaPrimer(ActionEvent event) {
         botonDisponible(0, "-fx-border-color: #0377fc; -fx-background-color: #FFFFFF;");
-        botonDisponible(modelo.jugar(0), "-fx-border-color: #0377fc; -fx-background-color: #000000;");
+        modelo.jugar(0);
+        mensajeGanador("Blanco");
+        botonDisponible(modelo.jugarIA(), "-fx-border-color: #0377fc; -fx-background-color: #000000;");
+        mensajeGanador("Negro");
+        columnaLlena();
     }
 
     @FXML
     void colocarFichaColumnaMedio(ActionEvent event) {
         botonDisponible(1, "-fx-border-color: #0377fc; -fx-background-color: #FFFFFF;");
-        botonDisponible(modelo.jugar(1), "-fx-border-color: #0377fc; -fx-background-color: #000000;");
+        modelo.jugar(1);
+        mensajeGanador("Blanco");
+        botonDisponible(modelo.jugarIA(), "-fx-border-color: #0377fc; -fx-background-color: #000000;");
+        mensajeGanador("Negro");
+        columnaLlena();
     }
 
     @FXML
     void colocarFichaUltimaColumna(ActionEvent event) {
         botonDisponible(2, "-fx-border-color: #0377fc; -fx-background-color: #FFFFFF;");
-        botonDisponible(modelo.jugar(2), "-fx-border-color: #0377fc; -fx-background-color: #000000;");
+        modelo.jugar(2);
+        mensajeGanador("Blanco");
+        botonDisponible(modelo.jugarIA(), "-fx-border-color: #0377fc; -fx-background-color: #000000;");
+        mensajeGanador("Negro");
+        columnaLlena();
+    }
+
+    public void mensajeGanador(String jugador) {
+        if(!modelo.ganador(jugador))
+            return;
+        Alertas.creaAlerta("Ganador", "El ganador del juego es el " + (jugador.compareTo("Blanco") == 0 ? "jugador" : "agente"), Alert.AlertType.INFORMATION);
+        btnPrimer.setDisable(true);
+        btnMedio.setDisable(true);
+        btnUltimo.setDisable(true);
+    }
+
+    public void columnaLlena() {
+        if(modelo.columnaLlena(0))
+            btnPrimer.setDisable(true);
+        if(modelo.columnaLlena(1))
+            btnMedio.setDisable(true);
+        if(modelo.columnaLlena(2))
+            btnUltimo.setDisable(true);
     }
 
     public void botonDisponible(int columna, String color) {

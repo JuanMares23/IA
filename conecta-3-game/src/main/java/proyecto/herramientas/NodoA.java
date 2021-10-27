@@ -14,41 +14,45 @@ public class NodoA {
         this.jugada = jugada;
     }
 
-    public void generarHijos(String jugador){
+    public void generarHijos(String jugador) {
         hijos = new ArrayList<>(3);
         Tablero tablero1, tablero2, tablero3;
+        NodoA aux;
         if(!tablero.columnaLlena(0)) {
             tablero1 = tablero.clonar();
             tablero1.colocarFicha(0, jugador);
-            hijos.add(new NodoA(tablero1, 0));
+            aux = new NodoA(tablero1, 0);
+            hijos.add(aux);
         }
         if(!tablero.columnaLlena(1)) {
             tablero2 = tablero.clonar();
             tablero2.colocarFicha(1, jugador);
-            hijos.add(new NodoA(tablero2, 1));
+            aux = new NodoA(tablero2, 1);
+            hijos.add(aux);
         }
         if(!tablero.columnaLlena(2)) {
             tablero3 = tablero.clonar();
             tablero3.colocarFicha(2, jugador);
-            hijos.add(new NodoA(tablero3, 2));
+            aux = new NodoA(tablero3, 2);
+            hijos.add(aux);
         }
     }
 
-    public int getMin(){
+    public int getMin() {
         int min = 999, aux;
-        for(int i=0; i<hijos.size(); i++){
+        for(int i = 0 ; i < hijos.size() ; i++) {
             aux = hijos.get(i).getTablero().calcularAptitud();
             min = ( aux < min) ? aux : min;
         }
         return min;
     }
 
-    public NodoA getMax(){
-        int max = 0, aux;
+    public NodoA getMax() {
+        int max = -1000, aux;
         NodoA nodoAux = null;
-        for(int i=0; i<hijos.size(); i++){
+        for(int i = 0 ; i < hijos.size() ; i++) {
             aux = hijos.get(i).getAptitud();
-            if( aux > max) {
+            if(aux > max) {
                 max = aux;
                 nodoAux = hijos.get(i);
             }
@@ -60,7 +64,7 @@ public class NodoA {
         hijos.clear();
     }
 
-    public Tablero getTablero(){
+    public Tablero getTablero() {
         return tablero;
     }
 

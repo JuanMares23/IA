@@ -16,13 +16,11 @@ public class Tablero {
     }
 
     public void colocarFicha(int columna, String jugador) {
-        System.out.println(jugador + "-------" + columna);
-        if(posiciones[2][columna] == "") {
+        if(posiciones[2][columna].compareTo("") == 0) {
             posiciones[2][columna] = jugador;
-            System.out.println("holaaaaaaaaaaaaaaaaaaaaaaa");
             return;
         }
-        if(posiciones[1][columna] == "") {
+        if(posiciones[1][columna].compareTo("") == 0) {
             posiciones[1][columna] = jugador;
             return;
         }
@@ -30,7 +28,7 @@ public class Tablero {
     }
 
     public boolean columnaLlena(int columna) {
-        return posiciones[0][columna] != "";
+        return posiciones[0][columna].compareTo("") != 0;
     }
 
     public boolean tableroLleno() {
@@ -38,27 +36,27 @@ public class Tablero {
     }
 
     public boolean renglonDisponible(int renglon, String jugador) {
-        return (posiciones[renglon][0] == "" || posiciones[renglon][0].compareTo(jugador) == 0) &&
-                (posiciones[renglon][1] == "" || posiciones[renglon][1].compareTo(jugador) == 0) &&
-                (posiciones[renglon][2] == "" || posiciones[renglon][2].compareTo(jugador) == 0);
+        return (posiciones[renglon][0].compareTo("") == 0 || posiciones[renglon][0].compareTo(jugador) == 0) &&
+                (posiciones[renglon][1].compareTo("") == 0 || posiciones[renglon][1].compareTo(jugador) == 0) &&
+                (posiciones[renglon][2].compareTo("") == 0 || posiciones[renglon][2].compareTo(jugador) == 0);
     }
 
     public boolean columnaDisponible(int columna, String jugador) {
-        return (posiciones[0][columna] == "" || posiciones[0][columna].compareTo(jugador) == 0) &&
-                (posiciones[1][columna] == "" || posiciones[1][columna].compareTo(jugador) == 0) &&
-                (posiciones[2][columna] == "" || posiciones[2][columna].compareTo(jugador) == 0);
+        return (posiciones[0][columna].compareTo("") == 0 || posiciones[0][columna].compareTo(jugador) == 0) &&
+                (posiciones[1][columna].compareTo("") == 0 || posiciones[1][columna].compareTo(jugador) == 0) &&
+                (posiciones[2][columna].compareTo("") == 0 || posiciones[2][columna].compareTo(jugador) == 0);
     }
 
     public boolean diagonalUnoDisponible(String jugador) {
-        return (posiciones[0][0] == "" || posiciones[0][0].compareTo(jugador) == 0) &&
-                (posiciones[1][1] == "" || posiciones[1][1].compareTo(jugador) == 0) &&
-                (posiciones[2][2] == "" || posiciones[2][2].compareTo(jugador) == 0);
+        return (posiciones[0][0].compareTo("") == 0 || posiciones[0][0].compareTo(jugador) == 0) &&
+                (posiciones[1][1].compareTo("") == 0 || posiciones[1][1].compareTo(jugador) == 0) &&
+                (posiciones[2][2].compareTo("") == 0 || posiciones[2][2].compareTo(jugador) == 0);
     }
 
     public boolean diagonalDosDisponible(String jugador) {
-        return (posiciones[0][2] == "" || posiciones[0][2].compareTo(jugador) == 0) &&
-                (posiciones[1][1] == "" || posiciones[1][1].compareTo(jugador) == 0) &&
-                (posiciones[2][0] == "" || posiciones[2][0].compareTo(jugador) == 0);
+        return (posiciones[0][2].compareTo("") == 0 || posiciones[0][2].compareTo(jugador) == 0) &&
+                (posiciones[1][1].compareTo("") == 0 || posiciones[1][1].compareTo(jugador) == 0) &&
+                (posiciones[2][0].compareTo("") == 0 || posiciones[2][0].compareTo(jugador) == 0);
     }
 
     public int calcularAptitud() {
@@ -67,19 +65,19 @@ public class Tablero {
             return 999;
         if(ganador("Blanco"))
             return -999;
-        for(int i = 0 ; i < 3 ; i++){
-            aptitud = columnaDisponible(i, "Negro") ? aptitud++ : aptitud;
-            aptitud = renglonDisponible(i, "Negro") ? aptitud++ : aptitud;
+        for(int i = 0 ; i < 3 ; i++) {
+            aptitud = columnaDisponible(i, "Negro") ? ++aptitud : aptitud;
+            aptitud = renglonDisponible(i, "Negro") ? ++aptitud : aptitud;
         }
-        aptitud = diagonalDosDisponible("Negro") ? aptitud++ : aptitud;
-        aptitud = diagonalUnoDisponible("Negro") ? aptitud++ : aptitud;
+        aptitud = diagonalDosDisponible("Negro") ? ++aptitud : aptitud;
+        aptitud = diagonalUnoDisponible("Negro") ? ++aptitud : aptitud;
 
-        for(int i = 0 ; i < 3 ; i++){
-            aptitud = columnaDisponible(i, "Blanco") ? aptitud-- : aptitud;
-            aptitud = renglonDisponible(i, "Blanco") ? aptitud-- : aptitud;
+        for(int i = 0 ; i < 3 ; i++) {
+            aptitud = columnaDisponible(i, "Blanco") ? --aptitud : aptitud;
+            aptitud = renglonDisponible(i, "Blanco") ? --aptitud : aptitud;
         }
-        aptitud = diagonalDosDisponible("Blanco") ? aptitud-- : aptitud;
-        aptitud = diagonalUnoDisponible("Blanco") ? aptitud-- : aptitud;
+        aptitud = diagonalDosDisponible("Blanco") ? --aptitud : aptitud;
+        aptitud = diagonalUnoDisponible("Blanco") ? --aptitud : aptitud;
 
         return aptitud;
     }
