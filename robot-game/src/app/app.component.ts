@@ -1,3 +1,4 @@
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 
 
@@ -18,7 +19,8 @@ export class AppComponent implements OnInit {
   nodosAbiertos: number[] = [];
   nodosCerrados: number[] = [];
 
-  resultTime: number[] = [0,0,0,0]; 
+  resultTime: String[] = ["0","0","0","0"]; 
+  speed:number = 0;
 
   constructor() { 
     this.posicionInicial = 0;
@@ -39,77 +41,81 @@ export class AppComponent implements OnInit {
   async Profundidad(){
     this.nodosAbiertos = [];
     this.nodosCerrados = [];
+    let auxPosition = this.posicionInicial;
+    let aux: number = 0;
+    let count = 0;
 
-    console.log(this.posicionMeta, this.posicionInicial);
-    this.tablero[this.posicionInicial].casillasEnlazadas.map(e => this.nodosAbiertos.push(e));
+    this.nodosAbiertos.push(this.posicionInicial);
 
-    while(this.posicionInicial != this.posicionMeta){
-      await this.sleep(1000);
-      this.nodosCerrados.push( this.posicionInicial);
+    while(this.nodosAbiertos[0] != this.posicionMeta){
 
-      console.log(this.nodosCerrados);
+      await this.sleep(this.speed);
+      count = 0;
+      aux = this.dafaulValue( this.nodosAbiertos.shift());
 
-      this.posicionInicial = this.dafaulValue(this.nodosAbiertos.shift());
-      console.log(this.posicionInicial, this.posicionMeta);
+      this.tablero[aux].casillasEnlazadas.forEach(e => {
+        if(!this.nodosCerrados.includes(e) && !this.nodosAbiertos.includes(e)){
+          count++;
+          this.nodosAbiertos.unshift(e);
+        }
+      });
 
-      let aux = this.tablero[this.posicionInicial].casillasEnlazadas.length;
-      if(aux === 0)
-        continue;
-      for(let i= aux-1; i >= 0; i--){
-        if( this.nodosCerrados.includes(this.tablero[this.posicionInicial].casillasEnlazadas[i]))
-          continue;
-        this.nodosAbiertos.unshift(this.tablero[this.posicionInicial].casillasEnlazadas[i]);
+      this.nodosCerrados.push(aux);
+      
+      if(count === 0){
+        await this.calculaDistancia(this.nodosAbiertos[0]);
       }
-      console.log(this.nodosAbiertos);
+
+      this.posicionInicial = this.nodosAbiertos[0];
     }
-    console.log('fue encontrado en '+ this.posicionInicial);
+    this.posicionInicial = auxPosition;
   }
 
   async amplitud(){
     this.nodosAbiertos = [];
     this.nodosCerrados = [];
+    let auxPosition = this.posicionInicial;
+    let aux:number = 0;
 
-    console.log(this.posicionMeta, this.posicionInicial);
-    //Obtiene enlaces de posicion inicial
-    this.tablero[this.posicionInicial].casillasEnlazadas.map(e => this.nodosAbiertos.push(e));
+    //Almacenan el inicial
+    this.nodosAbiertos.push(this.posicionInicial);
+    //Si el primer elemento en diferente al meta
+    while(this.nodosAbiertos[0] != this.posicionMeta){
+      
+      await this.sleep(this.speed);
+      //Se almancen los hijos al final del array
+      this.tablero[this.nodosAbiertos[0]].casillasEnlazadas.forEach(e => {
+        if(!this.nodosCerrados.includes(e) && !this.nodosAbiertos.includes(e)){
+          this.nodosAbiertos.push(e);
+        }
+      });
+      //Se agrega a nodos cerrados el primero elemento en nodos abiertos y es removido
+      aux = this.dafaulValue(this.nodosAbiertos.shift());
+      this.nodosCerrados.push(aux);
 
-    while(this.posicionInicial != this.posicionMeta){
+      await this.calculaDistancia(auxPosition);
+      await this.calculaDistancia(this.nodosAbiertos[0]);
 
-      await this.sleep(1000);
-      this.nodosCerrados.push( this.posicionInicial);
-
-      console.log(this.nodosCerrados);
-      //Posicion inicial toma el valor del primer nodo abierto en la pila
-      this.posicionInicial = this.dafaulValue(this.nodosAbiertos.shift());
-      console.log(this.posicionInicial, this.posicionMeta);
-      //Toma el valor de la cantidad de enlaces de la casilla
-      let aux = this.tablero[this.posicionInicial].casillasEnlazadas.length;
-      if(aux === 0)
-        continue;
-      for(let i= aux-1; i >= 0; i--){
-        if( this.nodosCerrados.includes(this.tablero[this.posicionInicial].casillasEnlazadas[i]))
-          continue;
-        this.nodosAbiertos.push(this.tablero[this.posicionInicial].casillasEnlazadas[i]);
-      }
-      console.log(this.nodosAbiertos);
+      //posicion inicial toma el valor del primero hijo 
+      this.posicionInicial = this.nodosAbiertos[0];
     }
-    console.log('fue encontrado en '+ this.posicionInicial);
-
+    this.posicionInicial = auxPosition;
   }
 
   async primeroMejor(){
     this.nodosAbiertos = [];
     this.nodosCerrados = [];
+    let auxPosition = this.posicionInicial;
 
     //Obtiene enlaces de posicion inicial
     this.tablero[this.posicionInicial].casillasEnlazadas.map(e => this.nodosAbiertos.push(e));
 
     while(this.posicionInicial != this.posicionMeta){
 
-      await this.sleep(1000);
+      await this.sleep(this.speed);
       this.nodosCerrados.push( this.posicionInicial);
+
       this.nodosAbiertos.forEach(e => {
-        
         if(this.nodosCerrados.includes(e)){
           let index = this.nodosAbiertos.indexOf(e);
           this.nodosAbiertos.splice(index,1);
@@ -134,50 +140,42 @@ export class AppComponent implements OnInit {
 
       this.posicionInicial = heuristica;
     }
-    console.log('fue encontrado en '+ this.posicionInicial);
+    this.posicionInicial = auxPosition;
 
   }
 
-    async Aasterisco(){
-    this.nodosAbiertos = [];
-    this.nodosCerrados = [];
-    let baderaH: Boolean = false;
-    let banderaV: Boolean = false;
+   async Aasterisco(objetivo: number){
+    let distanciaH = this.tablero[objetivo].filaH - this.tablero[this.posicionInicial].filaH;
+    let distanciaV =  this.tablero[objetivo].filaV - this.tablero[this.posicionInicial].filaV;
 
-    //Obtiene enlaces de posicion inicial
-    this.tablero[this.posicionInicial].casillasEnlazadas.map(e => this.nodosAbiertos.push(e));
+    while(this.posicionInicial != objetivo){
 
-    while(this.posicionInicial != this.posicionMeta){
+      distanciaH = this.tablero[objetivo].filaH - this.tablero[this.posicionInicial].filaH;
+      distanciaV =  this.tablero[objetivo].filaV - this.tablero[this.posicionInicial].filaV
 
-      await this.sleep(1000);
-      this.nodosCerrados.push( this.posicionInicial);
-
-      
-      //Determina la hueristica de los enlaces
-      let heuristica: number = 200;
-      let enlacesClean: number[] = []
-      this.tablero[this.posicionInicial].casillasEnlazadas.forEach(e => {
-        if(!this.nodosCerrados.includes(e))
-          enlacesClean.push(e);
-      })
-
-      this.getPredictivilidad(enlacesClean).map(e => {
-        if(!this.nodosCerrados.includes(e.indiceResult)){
-          if( heuristica === 200 && e.indiceResult)
-            heuristica =  e.indiceResult;
-          this.nodosAbiertos.push(e.indiceResult);
+      if(distanciaV != 0){
+        if(this.tablero[this.posicionInicial + (distanciaV/ Math.abs(distanciaV))].isPared){
+          await this.calculaDistancia(this.posicionInicial -10);
+        }else{
+          this.posicionInicial += (distanciaV/ Math.abs(distanciaV));
         }
-        
-      });
+      }else{
+        if(distanciaH != 0){
+          if(this.tablero[this.posicionInicial +(distanciaH*10)  / Math.abs(distanciaH)].isPared){
+            if(!this.tablero[objetivo-1].isPared){
+              await this.calculaDistancia(objetivo-1);
+            }else if(!this.tablero[objetivo+1].isPared){
+              await this.calculaDistancia(objetivo+1);
+            }
+          }else{
+            this.posicionInicial += (distanciaH*10)  / Math.abs(distanciaH);
+          }
+        }
+      } 
 
-       if(heuristica === 200){
-         heuristica = this.dafaulValue(this.nodosAbiertos.shift());
-       }
-
-      this.posicionInicial = heuristica;
+      await this.sleep(20);
     }
-    console.log('fue encontrado en '+ this.posicionInicial);
-
+      
   }
 
   restaValores(indiceEnlaces: number[]):indiceValor[]{
@@ -185,31 +183,67 @@ export class AppComponent implements OnInit {
     indiceEnlaces.forEach(e => nuevosEnlaces.push( { indice:e,valor:Math.abs(e-this.posicionMeta)}));
     return nuevosEnlaces.sort((a,b) => a.valor-b.valor);
   }
-  
 
-  getPredictivilidad(enlaces:number[]){
-    
-    let plV: number[] = [0,5,0,1,3,2,0,4,4,0];
-    let plH: number[] = [0,2,4,2,3,1,4,1,1,1];
+  async todos(){
+    let dateInicial;
+    let dateFinal;
 
-    let positionH: number = Math.floor(this.posicionInicial / 10);
-    
-    let casillasAvanzar:number = Math.floor( this.posicionMeta / 10);
+    dateInicial = Date.now();
+    await this.amplitud();
+    dateFinal = Date.now();
+    this.ingresaDate(dateInicial, dateFinal, 0);
+    dateInicial = Date.now();
+    await this.Profundidad();
+    dateFinal = Date.now();
+    this.ingresaDate(dateInicial, dateFinal, 1);
+    dateInicial = Date.now();
+    await this.primeroMejor();
+    dateFinal= Date.now();
+    this.ingresaDate(dateInicial, dateFinal, 2);
+    dateInicial = Date.now();
+    await this.Aasterisco(this.posicionMeta);
+    dateFinal = Date.now();
+    this.ingresaDate(dateInicial, dateFinal, 3);
+  }
 
-    let caminosPosibles : camino[] = []; 
+  ingresaDate(inicial: number, final: number, position: number){
+    let time = final - inicial;
+    this.resultTime[position] = time.toString();
+  }
 
-    let v: number = 0;
+  async calculaDistancia(objetivo: number){
+    let distanciaH = this.tablero[objetivo].filaH - this.tablero[this.posicionInicial].filaH;
+    let distanciaV =  this.tablero[objetivo].filaV - this.tablero[this.posicionInicial].filaV;
+    let orientaH: boolean = false;
 
+    while(this.posicionInicial != objetivo){
 
-      caminosPosibles.push({valorHorizontal: plH[positionH], valorVertical: plV[casillasAvanzar],indiceResult: enlaces[0], valorFinal: plH[positionH] + plV[casillasAvanzar]});
+      distanciaH = this.tablero[objetivo].filaH - this.tablero[this.posicionInicial].filaH;
+      distanciaV =  this.tablero[objetivo].filaV - this.tablero[this.posicionInicial].filaV
+
+      if(distanciaV != 0){
+        if(this.tablero[this.posicionInicial + (distanciaV/ Math.abs(distanciaV))].isPared){
+          await this.calculaDistancia(this.posicionInicial +  (distanciaH  *10));
+        }else{
+          this.posicionInicial += (distanciaV/ Math.abs(distanciaV));
+        }
+      }else{
+        if(distanciaH != 0){
+          if(this.tablero[this.posicionInicial +(distanciaH*10)  / Math.abs(distanciaH)].isPared){
+            if(!this.tablero[objetivo-1].isPared){
+              await this.calculaDistancia(objetivo-1);
+            }else if(!this.tablero[objetivo+1].isPared){
+              await this.calculaDistancia(objetivo+1);
+            }
+          }else{
+            this.posicionInicial += (distanciaH*10)  / Math.abs(distanciaH);
+          }
+        }
+      } 
+
+      await this.sleep(50);
+    }
       
-      
-      caminosPosibles.push({valorHorizontal: plH[casillasAvanzar], valorVertical: plV[positionH],indiceResult: enlaces[1], valorFinal: plH[casillasAvanzar] + plV[positionH]});
-    
-    
-
-    return caminosPosibles.sort((a,b) => a.valorFinal - b.valorFinal);
-
   }
 
   dafaulValue(cantidad: number | undefined) :number{
@@ -224,11 +258,20 @@ export class AppComponent implements OnInit {
     this.tablero.push(new Casillas());
   }
 
+  let filaV = 0;
+  let filaH = 0;
   //ASIGNO VALORES TODO EL TABLERO
-  for(let i = 1 ; i <100; i++){
-
+  for(let i = 0 ; i <100; i++){
     this.tablero[i].indice = i;
     this.tablero[i].isPared = this.paredes.includes(i);
+    this.tablero[i].filaV = filaV;
+    this.tablero[i].filaH = filaH;
+    if(filaV === 9){
+      filaV = 0;
+      filaH++;
+    }else{
+    filaV++;
+    }
   }
   //ASIGNO ENLACES VETICALES
   let corte = 0;
@@ -268,11 +311,15 @@ class Casillas{
   indice: number = 0; 
   casillasEnlazadas:number[] = [];
   isPared: boolean = false;
+  filaH: number = 0;
+  filaV: number = 0;
 
   Casillas(){
     this.indice =0; 
     this.casillasEnlazadas = [];
     this.isPared = false;
+    this.filaH = 0;
+    this.filaV = 0;
   }
 
   addEnlace (indiceEnlace: number){
@@ -291,7 +338,5 @@ class Casillas{
 
 interface camino{
   valorHorizontal : number,
-  valorVertical: number,
-  indiceResult: number,
-  valorFinal: number,
+  valorVertical: number
 }

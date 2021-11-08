@@ -23,9 +23,13 @@
       </div>
       <div class="col text-center"><button type="button" (click)="Profundidad()"
           class="btn btn-success">Profundidad</button></div>
-      <div class="col text-center"><button (click)="Aasterisco()" type="button" class="btn btn-info">A*</button></div>
+      <div class="col text-center"><button (click)="Aasterisco(this.posicionMeta)" type="button"
+          class="btn btn-info">A*</button></div>
       <div class="col text-center"><button (click)="primeroMejor()" type="button" class="btn btn-dark">Primero el
           mejor</button></div>
+    </div>
+    <div class="text-center">
+      <button (click)="todos()" type="button" class="btn btn-dark">Todos</button>
     </div>
   </form>
 
